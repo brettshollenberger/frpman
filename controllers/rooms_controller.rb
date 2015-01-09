@@ -9,6 +9,12 @@ class RoomsController
   @rooms = {:shaloms_room => "cool"}
 
   def self.index(body)
-    socket_response :get, "/rooms", RoomsController.rooms.keys
+    socket_response :get, "/rooms", { rooms: RoomsController.rooms.keys }
+  end
+
+  def self.create(body)
+    name = body.name.gsub(/\s/) { |space| "_" }.downcase
+    @rooms[name] = []
+    socket_response :get, "/room/#{name}", [ room: @rooms[name] ]
   end
 end

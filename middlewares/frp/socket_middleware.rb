@@ -1,6 +1,7 @@
 require "faye/websocket"
 require "json"
 require "pry"
+require "ostruct"
 
 module FRP
   class SocketMiddleware
@@ -30,7 +31,7 @@ module FRP
           request = JSON.parse(event.data)
           method  = request["headers"]["method"]
           url     = request["headers"]["url"]
-          body    = request["body"]
+          body    = OpenStruct.new(request["body"])
 
           route   = SocketRouter.route(method, url)
 

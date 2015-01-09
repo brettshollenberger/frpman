@@ -1,7 +1,7 @@
-FRP Socket Client
+FRP Hangman
 ==================
 
-Server opens a socket stream to the browser, which wraps the stream in an observable
+Start socket-based Hangman game
 
 ```ruby
 rackup -s puma -E production config.ru

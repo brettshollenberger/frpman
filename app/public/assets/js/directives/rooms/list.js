@@ -8,7 +8,11 @@ angular
         }).map(function(response) {
           return response.body.rooms;
         }).subscribe(function(rooms) {
-          console.log(rooms);
+          element.html("");
+
+          rooms.forEach(function(room) {
+            element.append("<li room>" + room + "</li>");
+          });
         });
       }
     }

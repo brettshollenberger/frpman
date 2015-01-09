@@ -8,7 +8,7 @@ class RoomsController
 
   @rooms = {:shaloms_room => "cool"}
 
-  def self.index(body)
+  def self.index(body="")
     socket_response :get, "/rooms", { rooms: RoomsController.rooms.keys }
   end
 

@@ -22,7 +22,7 @@ module FRP
           print "socket opened"
           @clients << ws
 
-          ws.send socket_response :get, "/rooms", RoomsController.rooms.keys
+          ws.send RoomsController.index
         end
 
         ws.on :message do |event|

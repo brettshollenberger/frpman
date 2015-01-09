@@ -11,6 +11,12 @@ class SessionsController
 
     room.push(session)
 
+    room.select do |player|
+      player[:name] != body.name
+    end.each do |player|
+      player[:socket].send RoomsController.show OpenStruct.new({:name => body.room})
+    end
+
     socket_response :post, "/sessions", { :session => { :name => body.name, :room => body.room } }
   end
 end

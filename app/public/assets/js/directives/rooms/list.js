@@ -1,6 +1,6 @@
 angular
   .module('hangman')
-  .directive('roomsList', function() {
+  .directive('roomsList', ['$compile', function($compile) {
     return {
       link: function(scope, element, attr) {
         angular.socket.responses.filter(function(response) {
@@ -11,9 +11,9 @@ angular
           element.html("");
 
           rooms.forEach(function(room) {
-            element.append("<li room>" + room + "</li>");
+            element.append($compile("<li room>" + room + "</li>")(scope));
           });
         });
       }
     }
-  });
+  }]);

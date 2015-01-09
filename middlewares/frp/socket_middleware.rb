@@ -9,9 +9,14 @@ module FRP
 
     KEEPALIVE_TIME = 15
 
+    class << self
+      attr_accessor :clients
+    end
+
+    @clients = []
+
     def initialize(app)
       @app     = app
-      @clients = []
     end
 
     def call(env)
@@ -20,7 +25,7 @@ module FRP
 
         ws.on :open do
           print "socket opened"
-          @clients << ws
+          SocketMiddleware.clients << ws
 
           ws.send RoomsController.index
         end

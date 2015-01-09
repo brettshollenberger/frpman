@@ -20,6 +20,11 @@ class RoomsController
   def self.create(body)
     name = body.name.gsub(/\s/) { |space| "_" }.downcase
     @rooms[name] = []
+
+    FRP::SocketMiddleware.clients.each do |socket|
+      socket.send index
+    end
+
     socket_response :post, "/rooms", { room: { name: name, players: @rooms[name] } }
   end
 end

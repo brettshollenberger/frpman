@@ -22,5 +22,7 @@ end
 
 SocketRouter.draw do
   get "/rooms" => {:controller => RoomsController, :action => "index"}
+  get "/rooms/:name" => {:controller => RoomsController, :action => "show"}
   post "/rooms" => {:controller => RoomsController, :action => "create"}
+  post "/sessions" => {:controller => SessionsController, :action => "create"}
 end

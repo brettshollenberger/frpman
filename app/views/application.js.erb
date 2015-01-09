@@ -1,73 +1,33 @@
-function socketToObservable(socket) {
-  return Rx.Observable.create(function(observer) {
-    var subscribed = true;
+var scheme = '<%= @scheme %>',
+    uri    = scheme + document.location.host + "/";
 
-    socket.onmessage = function(message) {
-      if (subscribed) {
-        observer.onNext(message.data);
-      }
-    }
+angular.socket = new WebSocket(uri);
 
-    return function() {
-      subscribed = false;
-      socket.close();
-    }
-  });
-}
+angular.socket.responses = socketToObservable(angular.socket).map(function(response) {
+  return JSON.parse(response);
+});
 
-var scheme       = '<%= @scheme %>',
-    uri          = scheme + document.location.host + "/",
-    ws           = new WebSocket(uri),
-    socketStream = socketToObservable(ws).map(function(response) {
-      return JSON.parse(response);
-    }),
-    display      = $("#the_num");
+angular
+  .module('hangman', ['ng', 'ngRoute'])
+  .config(function ($routeProvider) {
+    $routeProvider
 
-socketStream
-  .forEach(function(n) {
-    console.log(n);
-  });
+      .when('/', {
+        templateUrl: 'views/rooms/index.html',
+        controller: 'RoomsIndexCtrl'
+      })
 
-function toSocketRequest(method, url, body) {
-  return JSON.stringify({
-    headers: {
-      method: method,
-      url   : url
-    },
-    body: body
-  });
-}
+      .when('/sessions/:roomName', {
+        templateUrl: 'views/sessions/new.html',
+        controller: 'SessionsNewCtrl'
+      })
 
-// POST new game
-(function(){
-  var createRoom = $('#create-room').toObservable('click'),
-      getRooms   = $('#get-rooms').toObservable('click'),
-      roomCreated = socketStream.filter(function(response) {
-        return response.headers.method == "post" && response.headers.url == "/rooms";
+      .when('/rooms/:name', {
+        templateUrl: 'views/rooms/show.html',
+        controller: 'RoomsShowCtrl'
+      })
+
+      .otherwise({
+        redirectTo: '/'
       });
-
-  roomCreated.subscribe(function(roomCreated) {
-    console.log("ROOM CREATED!!");
-    console.log(roomCreated);
   });
-
-  getRooms.map(function() {
-    return toSocketRequest("GET", "/rooms", {});
-  }).subscribe(function(request) {
-    ws.send(request);
-  });
-
-  createRoom.map(function(){
-    return $('#room-name').val()
-  })
-  .map(function(roomName) {
-    return toSocketRequest("POST", "/rooms", { name:roomName });
-  })
-  .subscribe(function(request){
-    ws.send(request);
-  },function(error){
-  
-  },function(){});
-})()
-
-

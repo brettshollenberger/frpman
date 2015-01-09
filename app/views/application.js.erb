@@ -1,73 +1,98 @@
-function socketToObservable(socket) {
-  return Rx.Observable.create(function(observer) {
-    var subscribed = true;
+var scheme = '<%= @scheme %>',
+    uri    = scheme + document.location.host + "/";
 
-    socket.onmessage = function(message) {
-      if (subscribed) {
-        observer.onNext(message.data);
-      }
-    }
+angular.socket = new WebSocket(uri);
 
-    return function() {
-      subscribed = false;
-      socket.close();
-    }
-  });
-}
+angular.socket.responses = socketToObservable(angular.socket).map(function(response) {
+  return JSON.parse(response);
+});
 
-var scheme       = '<%= @scheme %>',
-    uri          = scheme + document.location.host + "/",
-    ws           = new WebSocket(uri),
-    socketStream = socketToObservable(ws).map(function(response) {
-      return JSON.parse(response);
-    }),
-    display      = $("#the_num");
+angular
+  .module('hangman', ['ng', 'ngRoute'])
+  .config(function ($routeProvider) {
+    $routeProvider
 
-socketStream
-  .forEach(function(n) {
-    console.log(n);
-  });
+      .when('/', {
+        templateUrl: 'views/rooms/index.html',
+        controller: 'RoomsIndexCtrl'
+      })
 
-function toSocketRequest(method, url, body) {
-  return JSON.stringify({
-    headers: {
-      method: method,
-      url   : url
-    },
-    body: body
-  });
-}
+      .when('/rooms/:name', {
+        templateUrl: 'views/rooms/show.html',
+        controller: 'RoomsShowCtrl'
+      })
 
-// POST new game
-(function(){
-  var createRoom = $('#create-room').toObservable('click'),
-      getRooms   = $('#get-rooms').toObservable('click'),
-      roomCreated = socketStream.filter(function(response) {
-        return response.headers.method == "post" && response.headers.url == "/rooms";
+      .otherwise({
+        redirectTo: '/'
       });
-
-  roomCreated.subscribe(function(roomCreated) {
-    console.log("ROOM CREATED!!");
-    console.log(roomCreated);
   });
 
-  getRooms.map(function() {
-    return toSocketRequest("GET", "/rooms", {});
-  }).subscribe(function(request) {
-    ws.send(request);
-  });
+<%# (function(){ %>
+<%#   var scheme       = '<%= @scheme %1>', %>
+<%#       uri          = scheme + document.location.host + "/", %>
+<%#       ws           = new WebSocket(uri), %>
+<%#       socketStream = socketToObservable(ws).map(function(response) { %>
+<%#         return JSON.parse(response); %>
+<%#       }), %>
+<%#       display     = $("#the_num"), %>
+<%#       createRoom  = $('#create-room').toObservable('click'), %>
+<%#       roomsList   = $('#rooms-list'), %>
+<%#       addGames    = $('#add-games'), %>
+<%#       currentRoom = $('#current-room'), %>
+<%#       addPlayer   = $('#add-player'), %>
+<%#       roomName    = currentRoom.find('#room-name'), %>
+<%#       playersList = $('#players-list'), %>
+<%#       listRooms  = socketStream.filter(function(response) { %>
+<%#         return response.headers.method == "get" && response.headers.url == "/rooms"; %>
+<%#       }).map(function(response) { %>
+<%#         return response.body.rooms; %>
+<%#       }), %>
+<%#       roomCreated = socketStream.filter(function(response) { %>
+<%#         return response.headers.method == "post" && response.headers.url == "/rooms"; %>
+<%#       }).map(function(response) { %>
+<%#         return response.body.room; %>
+<%#       }); %>
 
-  createRoom.map(function(){
-    return $('#room-name').val()
-  })
-  .map(function(roomName) {
-    return toSocketRequest("POST", "/rooms", { name:roomName });
-  })
-  .subscribe(function(request){
-    ws.send(request);
-  },function(error){
-  
-  },function(){});
-})()
+<%#   addPlayer.hide(); %>
+<%#   currentRoom.hide(); %>
+
+<%#   // POST new game %>
+<%#   createRoom.map(function(){ %>
+<%#     return $('#room-name-input').val() %>
+<%#   }) %>
+<%#   .map(function(roomName) { %>
+<%#     return toSocketRequest("POST", "/rooms", { name:roomName }); %>
+<%#   }) %>
+<%#   .subscribe(function(request){ %>
+<%#     ws.send(request); %>
+<%#   }); %>
+
+<%#   // GET all games DOM %>
+<%#   listRooms.subscribe(function(rooms) { %>
+<%#     console.log("LIST ROOMS"); %>
+<%#     console.log(rooms); %>
+
+<%#     roomsList.html(""); %>
+
+<%#     for (index in rooms) { %>
+<%#       var room = rooms[index]; %>
+<%#       roomsList.append("<li class='room'>" + room + "</li>"); %>
+<%#     } %>
+<%#   }); %>
+
+<%#   // CREATE room DOM %>
+<%#   roomCreated.subscribe(function(room) { %>
+<%#     console.log("ROOM CREATED!!"); %>
+<%#     console.log(room); %>
+
+<%#     roomsList.hide(); %>
+<%#     addGames.hide(); %>
+
+<%#     addPlayer.show(); %>
+<%#     <1%# currentRoom.show(); %1> %>
+
+<%#     <1%# roomName.text(room.name); %1> %>
+<%#   }); %>
+<%# })() %>
 
 

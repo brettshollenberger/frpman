@@ -15,6 +15,6 @@ class RoomsController
   def self.create(body)
     name = body.name.gsub(/\s/) { |space| "_" }.downcase
     @rooms[name] = []
-    socket_response :post, "/rooms", [ room: @rooms[name] ]
+    socket_response :post, "/rooms", { room: { name: name, players: @rooms[name] } }
   end
 end

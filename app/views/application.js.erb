@@ -25,3 +25,31 @@ socketStream
   .forEach(function(n) {
     console.log(n);
   });
+
+function toSocketRequest(method, url, body) {
+  return JSON.stringify({
+    headers: {
+      method: method, 
+      url   : url
+    },
+    body: body
+  });
+}
+
+// POST new game
+(function(){
+  var createRoom = $('#create-room').toObservable('click');
+
+  createRoom.map(function(){
+    return $('#room-name').val()
+  })
+  .map(function(roomName) {
+    return toSocketRequest("POST", "/rooms", { name:roomName });
+  })
+  .subscribe(function(request){
+    ws.send(request);
+  },function(error){
+  
+  },function(){});
+})()
+

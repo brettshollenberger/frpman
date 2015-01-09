@@ -21,8 +21,6 @@ module FRP
           print "socket opened"
           @clients << ws
 
-          ws.send("HELLO WORLD")
-
           ws.send socket_response :get, "/rooms", @rooms.keys
         end
 

@@ -7,12 +7,12 @@ class SocketRouter
     instance_eval &block
   end
 
-  def self.get(options)
-    options.each do |k, v|
-      @routes[{:method => :get, :url => k}] = v
+  %w(get post put delete).each do |method|
+    define_singleton_method method do |options|
+      options.each do |k, v|
+        @routes[{:method => method.to_sym, :url => k}] = v
+      end
     end
-
-    puts @routes
   end
 
   def self.route(method, url)
@@ -22,4 +22,5 @@ end
 
 SocketRouter.draw do
   get "/rooms" => {:controller => RoomsController, :action => "index"}
+  post "/rooms" => {:controller => RoomsController, :action => "create"}
 end

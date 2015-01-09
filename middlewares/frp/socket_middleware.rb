@@ -1,5 +1,6 @@
 require "faye/websocket"
 require "json"
+require "pry"
 
 module FRP
   class SocketMiddleware
@@ -10,7 +11,6 @@ module FRP
     def initialize(app)
       @app     = app
       @clients = []
-      @rooms   = {:shaloms_room => []}
     end
 
     def call(env)
@@ -21,11 +21,20 @@ module FRP
           print "socket opened"
           @clients << ws
 
-          ws.send socket_response :get, "/rooms", @rooms.keys
+          ws.send socket_response :get, "/rooms", RoomsController.rooms.keys
         end
 
         ws.on :message do |event|
           p [:message, event.data]
+
+          request = JSON.parse(event.data)
+          method  = request["headers"]["method"]
+          url     = request["headers"]["url"]
+          body    = request["body"]
+
+          route   = SocketRouter.route(method, url)
+
+          ws.send(route.controller.send(route.action, body))
         end
 
         ws.on :close do |event|

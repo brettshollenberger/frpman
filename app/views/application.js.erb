@@ -38,7 +38,14 @@ function toSocketRequest(method, url, body) {
 
 // POST new game
 (function(){
-  var createRoom = $('#create-room').toObservable('click');
+  var createRoom = $('#create-room').toObservable('click'),
+      getRooms   = $('#get-rooms').toObservable('click');
+
+  getRooms.map(function() {
+    return toSocketRequest("GET", "/rooms", {});
+  }).subscribe(function(request) {
+    ws.send(request);
+  });
 
   createRoom.map(function(){
     return $('#room-name').val()
@@ -52,4 +59,5 @@ function toSocketRequest(method, url, body) {
   
   },function(){});
 })()
+
 

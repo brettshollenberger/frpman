@@ -2,7 +2,7 @@ angular
   .module('hangman')
   .controller('RoomsIndexCtrl', ['$scope', '$location', function($scope, $location) {
 
-    // When room is created, re-route to rooms#show
+    // When room is created, re-route to sessions#new
     angular
       .socket
       .responses
@@ -13,7 +13,7 @@ angular
         return response.body.room;
       })
       .subscribe(function(room) {
-        $location.path("/rooms/" + room.name);
+        $location.path("/sessions/" + room.name);
         $scope.$apply();
       });
   }]);

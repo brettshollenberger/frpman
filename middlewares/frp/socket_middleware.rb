@@ -28,10 +28,11 @@ module FRP
         ws.on :message do |event|
           p [:message, event.data]
 
-          request = JSON.parse(event.data)
-          method  = request["headers"]["method"]
-          url     = request["headers"]["url"]
-          body    = OpenStruct.new(request["body"])
+          request     = JSON.parse(event.data)
+          method      = request["headers"]["method"]
+          url         = request["headers"]["url"]
+          body        = OpenStruct.new(request["body"])
+          body.socket = ws
 
           route   = SocketRouter.route(method, url)
 

@@ -6,10 +6,15 @@ class RoomsController
     attr_accessor :rooms
   end
 
-  @rooms = {:shaloms_room => "cool"}
+  @rooms = {}
 
   def self.index(body="")
     socket_response :get, "/rooms", { rooms: RoomsController.rooms.keys }
+  end
+
+  def self.show(body)
+    players = @rooms[body.name].map { |player| player[:name] }
+    socket_response :get, "/rooms/:name", { room: { name: body.name, players: players } }
   end
 
   def self.create(body)

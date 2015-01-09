@@ -11,12 +11,17 @@ class SessionsController
 
     room.push(session)
 
+    notify_room_of_new_player(room, body)
+
+    socket_response :post, "/sessions", { :session => { :name => body.name, :room => body.room } }
+  end
+
+private
+  def self.notify_room_of_new_player(room, body)
     room.select do |player|
       player[:name] != body.name
     end.each do |player|
       player[:socket].send RoomsController.show OpenStruct.new({:name => body.room})
     end
-
-    socket_response :post, "/sessions", { :session => { :name => body.name, :room => body.room } }
   end
 end

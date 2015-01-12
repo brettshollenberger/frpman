@@ -1,38 +1,34 @@
-require "redis"
-require "json"
+require "ostruct"
 
 module Hangman
   class BookKeeper
-    class Rooms
-      attr_accessor :redis
-
-      def initialize
-        @redis = Redis.new
-      end
-
+    class Rooms < OpenStruct
       def add(room_name)
         if exists?(room_name)
           raise DuplicateRoomError, room_name
         else
-          redis.hset("room", room_name, "[]")
+          send("#{room_name}=", Room.new)
         end
       end
 
       def remove(room_name)
-        redis.hdel("room", room_name)
+        if exists?(room_name)
+          delete_field(room_name)
+        end
+      end
+
+      def remove_all!
+        names.each do |name|
+          remove name
+        end
       end
 
       def exists?(room_name)
-        !!redis.hget("room", room_name)
+        respond_to?(room_name)
       end
 
       def names
-        redis.hkeys("room")
-      end
-
-      private
-      def room_key(room_name)
-        "room #{room_name}"
+        methods(false).grep(/^((?!\=).)*$/s)
       end
     end
   end

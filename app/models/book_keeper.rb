@@ -16,6 +16,11 @@ module Hangman
     @connections = Connections.new
     @runner      = Runner.new
 
+    def self.empty!
+      rooms.remove_all!
+      connections.remove_all!
+    end
+
     def self.add_room(room_name)
       rooms.add(room_name)
     end
@@ -38,7 +43,7 @@ module Hangman
 
     def self.remove_room(room_name)
       if rooms.exists?(room_name)
-        # rooms.send(room_name).map(&:name).each { |player| connections.remove(player) }
+        rooms.send(room_name).map(&:name).each { |player| connections.remove(player) }
         rooms.remove(room_name)
       end
     end

@@ -1,0 +1,22 @@
+* {
+  box-sizing:border-box;
+}
+
+body {
+  background-color:#dfe2e2;
+}
+
+#main{
+  margin:0 auto;
+  max-width:50em;
+}
+
+article {
+  padding:0.5em;
+}
+
+article + article {
+  margin-top:1em;
+}
+
+

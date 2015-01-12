@@ -1,0 +1,17 @@
+[rooms-list] {
+  padding:0;
+  margin:0;
+  list-style-type:none;
+}
+
+[rooms-list] li {
+  border:1px solid #999;
+  border-radius:5px;
+  padding:0.5em;
+  cursor:pointer;
+  transition:0.125s background-color ease;
+}
+
+[rooms-list] li:hover {
+  background-color:rgba(25,25,25,0.05);
+}

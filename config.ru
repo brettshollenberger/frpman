@@ -1,8 +1,4 @@
-directories = ["../app", "../controllers", "../middlewares"]
-
-directories.each do |dir|
-  Dir[File.expand_path(File.join(__FILE__, "#{dir}/**/*.rb"))].each { |f| require f }
-end
+Dir[File.expand_path(File.join(__FILE__, "../app/**/*.rb"))].each { |f| require f }
 
 use FRP::SocketMiddleware
 

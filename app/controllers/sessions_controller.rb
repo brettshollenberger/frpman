@@ -7,9 +7,9 @@ class SessionsController
 
   def self.create(body)
     session = { :name => body.name, :socket => body.socket }
-    room = RoomsController.rooms[body.room]
+    room = Hangman::BookKeeper.rooms.send(body.room)
 
-    room.push(session)
+    room.add(session)
 
     notify_room_of_new_player(room, body)
 
@@ -19,9 +19,9 @@ class SessionsController
 private
   def self.notify_room_of_new_player(room, body)
     room.select do |player|
-      player[:name] != body.name
+      player.name != body.name
     end.each do |player|
-      player[:socket].send RoomsController.show OpenStruct.new({:name => body.room})
+      player.socket.send RoomsController.show OpenStruct.new({:name => body.room})
     end
   end
 end

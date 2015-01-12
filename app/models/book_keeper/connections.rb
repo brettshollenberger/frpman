@@ -6,7 +6,7 @@ module Hangman
       end
 
       def remove_all!
-        all.each do |name|
+        names.each do |name|
           remove name
         end
       end
@@ -17,8 +17,14 @@ module Hangman
         end
       end
 
-      def all
+      def names
         methods(false).grep(/^((?!\=).)*$/s)
+      end
+
+      def each(&block)
+        names.map do |name|
+          send(name)
+        end.each(&block)
       end
     end
   end

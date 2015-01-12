@@ -39,7 +39,7 @@ module FRP
           body        = OpenStruct.new(request["body"])
           body.socket = ws
 
-          route   = SocketRouter.route(method, url)
+          route = SocketRouter.route(method, url)
 
           ws.send(route.controller.send(route.action, body))
         end

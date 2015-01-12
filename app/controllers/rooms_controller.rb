@@ -3,27 +3,24 @@ require_relative "../middlewares/frp/socket_http"
 class RoomsController
   class << self
     include SocketHTTP
-    attr_accessor :rooms
   end
 
-  @rooms = {}
-
   def self.index(body="")
-    socket_response :get, "/rooms", { rooms: RoomsController.rooms.keys }
+    socket_response :get, "/rooms", { rooms: Hangman::BookKeeper.rooms.names }
   end
 
   def self.show(body)
-    players = @rooms[body.name].map { |player| player[:name] }
+    players = Hangman::BookKeeper.rooms.send(body.name).players
     socket_response :get, "/rooms/:name", { room: { name: body.name, players: players } }
   end
 
   def self.create(body)
     name = body.name.gsub(/\s/) { |space| "_" }.downcase
-    @rooms[name] = []
+    Hangman::BookKeeper.add_room(name)
 
     send_rooms_to_clients
 
-    socket_response :post, "/rooms", { room: { name: name, players: @rooms[name] } }
+    socket_response :post, "/rooms", { room: { name: name, players: Hangman::BookKeeper.rooms.send(name).players } }
   end
 
 private

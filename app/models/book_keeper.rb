@@ -26,7 +26,9 @@ module Hangman
     end
 
     def self.add_player(room_name, player_details)
-      player_details = OpenStruct.new(player_details.merge(:room => room_name))
+      player_details        = OpenStruct.new(player_details.merge(:room => room_name))
+      player_details.name   = player_details.name.to_s.downcase
+      player_details.socket = SocketAdapter.adapt(player_details.socket)
 
       if connections.exists?(player_details.name)
         raise DuplicatePlayerError, player_details

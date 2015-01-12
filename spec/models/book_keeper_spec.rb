@@ -22,7 +22,7 @@ describe Hangman::BookKeeper do
     Hangman::BookKeeper.add_room(:shaloms_room)
     Hangman::BookKeeper.add_player(:shaloms_room, {:name => :brett, :socket => {}})
 
-    expect(Hangman::BookKeeper.rooms.shaloms_room.players).to include(:brett)
+    expect(Hangman::BookKeeper.rooms.shaloms_room.players).to include("brett")
   end
 
   it "does not add duplicate player names" do
@@ -30,13 +30,6 @@ describe Hangman::BookKeeper do
     Hangman::BookKeeper.add_player(:shaloms_room, {:name => :brett, :socket => {}})
 
     expect { Hangman::BookKeeper.add_player(:shaloms_room, {:name => :brett, :socket => {}}) }.to raise_error Hangman::BookKeeper::DuplicatePlayerError
-  end
-
-  it "tracks which connections exist" do
-    Hangman::BookKeeper.add_room(:shaloms_room)
-    Hangman::BookKeeper.add_player(:shaloms_room, {:name => :brett, :socket => {}})
-
-    expect(Hangman::BookKeeper.connections.brett.socket).to eq({})
   end
 
   it "removes players" do

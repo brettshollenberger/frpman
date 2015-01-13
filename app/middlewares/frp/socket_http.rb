@@ -10,4 +10,12 @@ module SocketHTTP
       body: body
     })
   end
+
+  def controller_action(controller, action, data)
+    controller.send(action, OpenStruct.new(data))
+  end
+
+  def each_connection(room, &block)
+    room.map(&:socket).each(&block)
+  end
 end

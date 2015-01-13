@@ -131,5 +131,13 @@ describe Hangman::Game do
 
       expect(game.winner.name).to eq "Brett"
     end
+
+    it "fills in guesses that occur in multiple locations" do
+      game = Hangman::Game.new(:secret => "cool")
+      game.players << {:name => "Brett"}
+
+      game.guess("Brett", "o")
+      expect(game.word).to eq "-oo-"
+    end
   end
 end

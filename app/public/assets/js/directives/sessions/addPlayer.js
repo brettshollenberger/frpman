@@ -6,18 +6,23 @@ angular
       link: function(scope, element, attr) {
         var playerName   = element.find("#player-name"),
             submitButton = element.find("#create-session"),
-            submitClicks = submitButton.toObservable("click");
+            submitClicks = submitButton.toObservable("click"),
+            submissions  = submitClicks.map(function() {
+              return playerName.val();
+            });
 
-        submitClicks
-          .map(function() {
-            return playerName.val();
-          })
-          .map(function(name) {
-            return toSocketRequest("POST", "/sessions", { room: scope.roomName, name: name });
-          })
-          .subscribe(function(request) {
-            angular.socket.send(request);
-          });
+          submissions
+            .subscribe(function(name) {
+              angular.socket.player = name;
+            });
+
+          submissions
+            .map(function(name) {
+              return toSocketRequest("POST", "/sessions", { room: scope.roomName, name: name });
+            })
+            .subscribe(function(request) {
+              angular.socket.send(request);
+            });
       }
     }
   });

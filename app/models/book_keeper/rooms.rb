@@ -7,7 +7,7 @@ module Hangman
         if exists?(room_name)
           raise DuplicateRoomError, room_name
         else
-          send("#{room_name}=", Room.new)
+          send("#{room_name}=", Room.new(room_name))
         end
       end
 

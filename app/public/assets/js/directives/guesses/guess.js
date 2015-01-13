@@ -10,8 +10,14 @@ angular
 
         submitClicks
           .map(function() {
-            var guess = guessInput.val();
-            return toSocketRequest("POST", "/guesses/:room_name", {guess: guess, roomName: attr.roomName});
+            return guessInput.val();
+          })
+          .map(function(guess) {
+            return toSocketRequest("POST", "/guesses/:room_name", {
+              guess: guess,
+              guesser: angular.socket.player,
+              roomName: attr.roomName
+            });
           })
           .subscribe(function(request) {
             angular.socket.send(request);

@@ -18,11 +18,9 @@ module Hangman
       secret.chars.each.with_index.reduce(false) do |correct_guess, (letter_in_word, index)|
         if letter == letter_in_word
           self[index] = letter
-          return true
-        elsif correct_guess
-          return true
+          true
         else
-          false
+          correct_guess
         end
       end
     end

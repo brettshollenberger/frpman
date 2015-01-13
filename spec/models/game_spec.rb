@@ -95,8 +95,20 @@ describe Hangman::Game do
 
       game.guess("Brett", "o")
       expect(game.man).to eq ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
+    end
+
+    it "is over when the man is completely hung" do
+      game.man = ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
 
       expect(game.over?).to be true
+    end
+
+    it "does not allow guesses when the game is over" do
+      game.give_up!
+
+      expect(game.over?).to be true
+
+      expect { game.guess("Brett", "o") }.to raise_error Hangman::Game::GameOverError
     end
 
     it "selects a winner when the game is over" do

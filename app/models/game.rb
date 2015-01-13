@@ -3,6 +3,7 @@ module Hangman
     class OutOfTurnGuessError < StandardError; end
     class NotAPlayerError < StandardError; end
     class PreviouslyGuessedError < StandardError; end
+    class GameOverError < StandardError; end
 
     attr_accessor :word, :players, :current_player, :runner, :messages,
                   :guesses, :current_error, :winner, :man, :hangman_pieces
@@ -18,6 +19,10 @@ module Hangman
       @guesses        = []
       @man            = []
       @hangman_pieces = Game.hangman_pieces.dup
+    end
+
+    def give_up!
+      @man = Game.hangman_pieces
     end
 
     def current_player
@@ -58,6 +63,8 @@ module Hangman
         raise OutOfTurnGuessError, guesser
       elsif guesses.include?(letter_guessed)
         raise PreviouslyGuessedError, letter_guessed
+      elsif over?
+        raise GameOverError
       end
     end
 

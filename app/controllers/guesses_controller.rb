@@ -26,6 +26,7 @@ class GuessesController
       result = game.guess(guesser, guess)
       notify_word(room)
       notify_guesses(room)
+      notify_hangman(room)
     rescue => e
     end
 
@@ -42,6 +43,12 @@ private
   def self.notify_guesses(room)
     each_connection(room) do |sock|
       sock.send controller_action GuessesController, "index", {room_name: room.name}
+    end
+  end
+
+  def self.notify_hangman(room)
+    each_connection(room) do |sock|
+      sock.send controller_action HangmanController, "show", {room_name: room.name}
     end
   end
 end

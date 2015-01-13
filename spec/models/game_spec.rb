@@ -89,29 +89,42 @@ describe Hangman::Game do
 
     it "adds pieces to the hung man as incorrect guesses are made" do
       game.guess("Brett", "q")
-      expect(game.man).to eq ["hat"]
+      expect(game.man).to eq ["base"]
 
-      game.guess("Shalom", "w")
-      expect(game.man).to eq ["hat", "head"]
+      game.guess("Shalom", "a")
+      expect(game.man).to eq ["base", "pole"]
 
-      game.guess("Brett", "e")
-      expect(game.man).to eq ["hat", "head", "body"]
+      game.guess("Brett", "s")
+      expect(game.man).to eq ["base", "pole", "noose"]
 
-      game.guess("Shalom", "t")
-      expect(game.man).to eq ["hat", "head", "body", "left_arm"]
+      game.guess("Shalom", "v")
+      expect(game.man).to eq ["base", "pole", "noose", "hat"]
 
-      game.guess("Brett", "y")
-      expect(game.man).to eq ["hat", "head", "body", "left_arm", "right_arm"]
+      game.guess("Brett", "w")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head"]
 
-      game.guess("Shalom", "i")
-      expect(game.man).to eq ["hat", "head", "body", "left_arm", "right_arm", "left_leg"]
+      game.guess("Shalom", "e")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body"]
 
-      game.guess("Brett", "o")
-      expect(game.man).to eq ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
+      game.guess("Brett", "t")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm"]
+
+      game.guess("Shalom", "y")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                              "right_arm" ]
+
+      game.guess("Brett", "i")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                              "right_arm", "left_leg"]
+
+      game.guess("Shalom", "o")
+      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                              "right_arm", "left_leg", "right_leg"]
     end
 
     it "is over when the man is completely hung" do
-      game.man = ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
+      game.man = ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                  "right_arm", "left_leg", "right_leg"]
 
       expect(game.over?).to be true
     end

@@ -9,7 +9,8 @@ module Hangman
                   :guesses, :current_error, :winner, :man, :hangman_pieces
 
     def self.hangman_pieces
-      ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
+      ["base", "pole", "noose", "hat", "head", "body",
+       "left_arm", "right_arm", "left_leg", "right_leg"]
     end
 
     def initialize(options={})

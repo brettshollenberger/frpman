@@ -11,6 +11,12 @@ describe Hangman::BookKeeper do
     expect(Hangman::BookKeeper.rooms.names).to include(:shaloms_room)
   end
 
+  it "adds games when a room is added" do
+    Hangman::BookKeeper.add_room(:shaloms_room)
+
+    expect(Hangman::BookKeeper.rooms.shaloms_room.game.word.length).to be > 0
+  end
+
   it "does not add duplicate rooms" do
     Hangman::BookKeeper.add_room(:shaloms_room)
 

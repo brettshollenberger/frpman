@@ -4,7 +4,7 @@ module Hangman
       attr_accessor :name
 
       def initialize(options={})
-        @name = options[:name].downcase
+        @name = options[:name]
       end
     end
   end

@@ -15,9 +15,14 @@ module Hangman
 
       letter = letter.downcase
 
-      secret.chars.each_with_index do |letter_in_word, index|
+      secret.chars.each.with_index.reduce(false) do |correct_guess, (letter_in_word, index)|
         if letter == letter_in_word
           self[index] = letter
+          return true
+        elsif correct_guess
+          return true
+        else
+          false
         end
       end
     end

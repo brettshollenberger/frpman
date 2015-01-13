@@ -1,34 +1,43 @@
 module Hangman
   class Game
-    attr_accessor :word, :players, :turn, :current_player, :runner, :messages, :guesses, :current_error
+    class OutOfTurnGuessError < StandardError; end
+    class NotAPlayerError < StandardError; end
+    class PreviouslyGuessedError < StandardError; end
+
+    attr_accessor :word, :players, :current_player, :runner, :messages,
+                  :guesses, :current_error, :winner, :man, :hangman_pieces
+
+    def self.hangman_pieces
+      ["hat", "head", "body", "left_arm", "right_arm", "left_leg", "right_leg"]
+    end
 
     def initialize(options={})
-      @word     = Hangman::Word.new(options)
-      @players  = Hangman::Game::Players.new
-      # @messages = Hangman::Messages.new
-      @turn     = 0
-      @guesses  = []
-    end
-
-    def play
-      take_turn until over?
-      game_over
-    end
-
-    def over?
-      word.solved?
+      @word           = Hangman::Word.new(options)
+      @players        = Hangman::Game::Players.new
+      @turn_number    = 0
+      @guesses        = []
+      @man            = []
+      @hangman_pieces = Game.hangman_pieces.dup
     end
 
     def current_player
-      players[self.turn]
+      players[turn_number]
     end
 
-    def take_turn
-      notify_word
-      prompt_turn
-      guess_letter
+    def guess(guesser, letter_guessed)
+      protect_invalid_guesses(guesser, letter_guessed)
+
+      answer_correct = word.guess(letter_guessed)
+      guesses.push(letter_guessed)
       select_winner if over?
+      hang_man unless answer_correct
       switch_turn
+
+      return answer_correct
+    end
+
+    def over?
+      word.solved? || man_hung?
     end
 
     def select_winner
@@ -36,72 +45,49 @@ module Hangman
     end
 
   private
-    def switch_turn
-      self.turn += 1
+    def man_hung?
+      man == Game.hangman_pieces
+    end
 
-      if current_player.nil?
-        self.turn = 0
+    def protect_invalid_guesses(guesser, letter_guessed)
+      guesser_number = player_number(guesser)
+
+      if guesser_number.nil?
+        raise NotAPlayerError, guesser
+      elsif turn_number != guesser_number
+        raise OutOfTurnGuessError, guesser
+      elsif guesses.include?(letter_guessed)
+        raise PreviouslyGuessedError, letter_guessed
       end
     end
 
-    def game_over
-      players.each do |player|
-        runner.write(player, message(:game_over, word, @winner.name))
-      end
+    def turn_number
+      @turn_number
     end
 
-    def prompt_turn
-      runner.write(current_player, message(:prompt_turn))
+    def turn_number=(n)
+      @turn_number = n
+    end
 
-      players.each do |player|
-        unless player == current_player
-          runner.write(player, message(:other_players_turn, current_player))
+    def player_number(player_name)
+      if player_name.respond_to?(:to_s)
+        players.each.with_index.reduce(nil) do |selected_player_index, (player, index)|
+          return selected_player_index unless selected_player_index.nil?
+          return index if player.name == player_name.to_s
         end
       end
     end
 
-    def guess_letter
-      until valid_guess?(guessed_letter = runner.read(current_player))
-        runner.write(current_player, message(current_error))
-      end
+    def switch_turn
+      @turn_number += 1
 
-      word.guess guessed_letter
-      guesses << guessed_letter
-
-      notify_guess(current_player, guessed_letter)
-    end
-
-    def valid_guess?(guessed_letter)
-      unless guessed_letter.length == 1
-        self.current_error = :invalid_length
-        return false
-      end
-
-      if guesses.include?(guessed_letter)
-        self.current_error = :previously_guessed
-        return false
-      end
-
-      true
-    end
-
-    def notify_word
-      players.each do |player|
-        runner.write(player, message(:word_is, word))
+      if current_player.nil?
+        @turn_number = 0
       end
     end
 
-    def notify_guess(current_player, guessed_letter)
-      players.each do |player|
-        name = player == current_player ? "you" : current_player.name
-
-        runner.write(player, message(:letter_guessed, name, guessed_letter))
-        runner.write(player, message(:letters_guessed, guesses))
-      end
-    end
-
-    def message(message_name, *args)
-      messages.retrieve(message_name, *args)
+    def hang_man
+      man.push(hangman_pieces.shift)
     end
   end
 end

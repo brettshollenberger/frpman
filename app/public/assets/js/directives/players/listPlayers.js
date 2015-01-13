@@ -8,7 +8,7 @@ angular
           .Observable
           .just("once")
           .map(function() {
-            return toSocketRequest("GET", "/rooms/:name", { name: attr.room });
+            return toSocketRequest("GET", "/rooms/:name", { name: attr.roomName });
           })
           .subscribe(function(request) {
             angular.socket.send(request);

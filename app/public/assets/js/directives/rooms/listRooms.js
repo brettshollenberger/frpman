@@ -3,9 +3,9 @@ angular
   .directive('listRooms', function() {
     return {
       link: function(scope, element, attr) {
-        element
-          .toObservable("click")
-          .startWith("starting click")
+        Rx
+          .Observable
+          .just("once")
           .map(function() {
             return toSocketRequest("GET", "/rooms", {});
           })

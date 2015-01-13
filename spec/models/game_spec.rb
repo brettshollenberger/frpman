@@ -51,9 +51,22 @@ describe Hangman::Game do
       expect { game.guess("Brett", "fun") }.to raise_error Hangman::Word::InvalidGuessError
     end
 
+    it "does not switch turns when errors are raised" do
+      begin
+        game.guess("Brett", "fun")
+      rescue
+      end
+
+      expect(game.current_player.name).to eq "Brett"
+    end
+
     it "tracks guessed letters" do
       game.guess("Brett", "f")
+      game.guess("Shalom", "r")
+
       expect(game.guesses).to include "f"
+      expect(game.guesses).to include "r"
+      expect(game.guesses).to_not include "u"
     end
 
     it "does not allow previously guessed letters" do

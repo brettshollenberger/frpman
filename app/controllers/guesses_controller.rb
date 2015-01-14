@@ -24,16 +24,30 @@ class GuessesController
 
     begin
       result = game.guess(guesser, guess)
+      notify_guessed(room, guesser, guess)
       notify_word(room)
       notify_guesses(room)
       notify_hangman(room)
     rescue => e
+      notify_error(e, guesser, guess, room)
     end
 
     socket_response :post, "/guesses/:room_name", {}
   end
 
 private
+  def self.notify_guessed(room, guesser, guess)
+    room.each do |player|
+      player.socket.send controller_action NotificationsController, "show", {
+        room_name: room.name,
+        player: player.name,
+        notification: :letter_guessed,
+        guesser: guesser,
+        guess: guess
+      }
+    end
+  end
+
   def self.notify_word(room)
     each_connection(room) do |sock|
       sock.send controller_action WordsController, "show", {room_name: room.name}
@@ -49,6 +63,19 @@ private
   def self.notify_hangman(room)
     each_connection(room) do |sock|
       sock.send controller_action HangmanController, "show", {room_name: room.name}
+    end
+  end
+
+  def self.notify_error(error, guesser, guess, room)
+    room.select { |player| player.name == guesser }.each do |player|
+      player.socket.send controller_action NotificationsController, "show", {
+        room_name: room.name,
+        player: player.name,
+        notification: :error,
+        error: error,
+        guesser: guesser,
+        guess: guess
+      }
     end
   end
 end

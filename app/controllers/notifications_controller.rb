@@ -64,4 +64,8 @@ private
   def self.out_of_turn_guess_error_text(body)
     "It is #{body.game.current_player.name}'s turn."
   end
+
+  def self.game_over_error_text(body)
+    "The game is over. You can no longer make guesses."
+  end
 end

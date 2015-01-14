@@ -58,14 +58,14 @@ module Hangman
     def protect_invalid_guesses(guesser, letter_guessed)
       guesser_number = player_number(guesser)
 
-      if guesser_number.nil?
+      if over?
+        raise GameOverError
+      elsif guesser_number.nil?
         raise NotAPlayerError, guesser
       elsif turn_number != guesser_number
         raise OutOfTurnGuessError, guesser
       elsif guesses.include?(letter_guessed)
         raise PreviouslyGuessedError, letter_guessed
-      elsif over?
-        raise GameOverError
       end
     end
 

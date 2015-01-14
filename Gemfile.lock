@@ -52,6 +52,7 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
+    recursive-open-struct (0.5.0)
     redis (3.2.0)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
@@ -88,6 +89,7 @@ DEPENDENCIES
   pry
   pry-byebug
   puma
+  recursive-open-struct
   redis
   rspec
   sinatra

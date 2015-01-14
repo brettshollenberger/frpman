@@ -26,6 +26,19 @@ private
     }
   end
 
+  def self.game_started(body)
+    {
+      :room => {
+        :name => body.room_name
+      },
+      :notification => {
+        :title => "Game Started",
+        :message => game_started_text(body),
+        :type => "info"
+      }
+    }
+  end
+
   def self.player_joined(body)
     {
       :room => {
@@ -65,6 +78,17 @@ private
       .gsub(/([a-z\d])([A-Z])/,'\1_\2')
       .tr("-", "_")
       .downcase + "_text"
+  end
+
+  def self.game_started_text(body)
+    current_player = body.game.current_player.name
+    player         = body.player == current_player ? "your" : "#{current_player}'s"
+
+    "It's #{player} turn"
+  end
+
+  def self.game_not_started_error_text(body)
+    "The game is not yet started. Start the game to guess a letter."
   end
 
   def self.letter_guessed_text(guesser, guess)

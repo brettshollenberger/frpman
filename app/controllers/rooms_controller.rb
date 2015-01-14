@@ -23,10 +23,42 @@ class RoomsController
     socket_response :post, "/rooms", { room: { name: name, players: Hangman::BookKeeper.rooms.send(name).players } }
   end
 
+  def self.update(body)
+    room = Hangman::BookKeeper.rooms.send(body.name)
+
+    if body.game && body.game.started
+      room.game.start!
+    end
+
+    notify_game_updated(room)
+
+    socket_response :put, "/rooms/:name", { room: { name: room.name }, game: { started: room.game.started? } }
+  end
+
 private
   def self.send_rooms_to_clients
     FRP::SocketMiddleware.clients.each do |socket|
       socket.send index
+    end
+  end
+
+  def self.notify_game_updated(room)
+    room.each do |player|
+      player.socket.send socket_response :put, "/rooms/:name", {
+        room: {
+          name: room.name
+        },
+        game: {
+          started: room.game.started?
+        }
+      }
+
+      player.socket.send controller_action NotificationsController, "show", {
+        room_name: room.name,
+        game: room.game,
+        player: player.name,
+        notification: :game_started
+      }
     end
   end
 end

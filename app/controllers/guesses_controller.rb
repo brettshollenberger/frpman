@@ -70,6 +70,7 @@ private
     room.select { |player| player.name == guesser }.each do |player|
       player.socket.send controller_action NotificationsController, "show", {
         room_name: room.name,
+        game: room.game,
         player: player.name,
         notification: :error,
         error: error,

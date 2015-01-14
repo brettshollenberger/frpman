@@ -35,7 +35,7 @@ private
       },
       :player => body.player,
       :notification => {
-        :title => "Letter Guessed",
+        :title => "Error",
         :message => send(err_method, body),
         :type => "danger"
       }
@@ -59,5 +59,9 @@ private
 
   def self.previously_guessed_error_text(body)
     "#{body.guess} has already been guessed"
+  end
+
+  def self.out_of_turn_guess_error_text(body)
+    "It is #{body.game.current_player.name}'s turn."
   end
 end

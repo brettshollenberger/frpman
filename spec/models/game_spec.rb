@@ -31,126 +31,137 @@ describe Hangman::Game do
       end
     end
 
-    it "reports whose turn it is" do
-      expect(game.current_player.name).to eq "Brett"
+    it "does not allow guesses until it is started" do
+      expect { game.guess("Brett", "e") }.to raise_error Hangman::Game::GameNotStartedError
     end
 
-    it "allows the current player to guess a letter" do
-      expect(game.guess("Brett", "e")).to be false
-    end
-
-    it "does not allow another player to guess a letter" do
-      expect { game.guess("Shalom", "e") }.to raise_error Hangman::Game::OutOfTurnGuessError
-    end
-
-    it "does not allow a non-player to guess a letter" do
-      expect { game.guess("Jake", "e") }.to raise_error Hangman::Game::NotAPlayerError
-    end
-
-    it "does not allow invalid guesses" do
-      expect { game.guess("Brett", "fun") }.to raise_error Hangman::Word::InvalidGuessError
-    end
-
-    it "does not switch turns when errors are raised" do
-      begin
-        game.guess("Brett", "fun")
-      rescue
+    describe "After game started" do
+      before(:each) do
+        game.start!
       end
 
-      expect(game.current_player.name).to eq "Brett"
-    end
+      it "reports whose turn it is" do
+        expect(game.current_player.name).to eq "Brett"
+      end
 
-    it "tracks guessed letters" do
-      game.guess("Brett", "f")
-      game.guess("Shalom", "r")
+      it "allows the current player to guess a letter" do
+        expect(game.guess("Brett", "e")).to be false
+      end
 
-      expect(game.guesses).to include "f"
-      expect(game.guesses).to include "r"
-      expect(game.guesses).to_not include "u"
-    end
+      it "does not allow another player to guess a letter" do
+        expect { game.guess("Shalom", "e") }.to raise_error Hangman::Game::OutOfTurnGuessError
+      end
 
-    it "does not allow previously guessed letters" do
-      game.guess("Brett", "f")
-      expect { game.guess("Shalom", "f") }.to raise_error Hangman::Game::PreviouslyGuessedError
-    end
+      it "does not allow a non-player to guess a letter" do
+        expect { game.guess("Jake", "e") }.to raise_error Hangman::Game::NotAPlayerError
+      end
 
-    it "correctly reports the word after guessing" do
-      game.guess("Brett", "f")
-      expect(game.word).to eq "f--"
-    end
+      it "does not allow invalid guesses" do
+        expect { game.guess("Brett", "fun") }.to raise_error Hangman::Word::InvalidGuessError
+      end
 
-    it "switches turns after guessing" do
-      game.guess("Brett", "f")
-      expect(game.current_player.name).to eq "Shalom"
+      it "does not switch turns when errors are raised" do
+        begin
+          game.guess("Brett", "fun")
+        rescue
+        end
 
-      game.guess("Shalom", "u")
-      expect(game.current_player.name).to eq "Brett"
-    end
+        expect(game.current_player.name).to eq "Brett"
+      end
 
-    it "adds pieces to the hung man as incorrect guesses are made" do
-      game.guess("Brett", "q")
-      expect(game.man).to eq ["base"]
+      it "tracks guessed letters" do
+        game.guess("Brett", "f")
+        game.guess("Shalom", "r")
 
-      game.guess("Shalom", "a")
-      expect(game.man).to eq ["base", "pole"]
+        expect(game.guesses).to include "f"
+        expect(game.guesses).to include "r"
+        expect(game.guesses).to_not include "u"
+      end
 
-      game.guess("Brett", "s")
-      expect(game.man).to eq ["base", "pole", "noose"]
+      it "does not allow previously guessed letters" do
+        game.guess("Brett", "f")
+        expect { game.guess("Shalom", "f") }.to raise_error Hangman::Game::PreviouslyGuessedError
+      end
 
-      game.guess("Shalom", "v")
-      expect(game.man).to eq ["base", "pole", "noose", "hat"]
+      it "correctly reports the word after guessing" do
+        game.guess("Brett", "f")
+        expect(game.word).to eq "f--"
+      end
 
-      game.guess("Brett", "w")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head"]
+      it "switches turns after guessing" do
+        game.guess("Brett", "f")
+        expect(game.current_player.name).to eq "Shalom"
 
-      game.guess("Shalom", "e")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body"]
+        game.guess("Shalom", "u")
+        expect(game.current_player.name).to eq "Brett"
+      end
 
-      game.guess("Brett", "t")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm"]
+      it "adds pieces to the hung man as incorrect guesses are made" do
+        game.guess("Brett", "q")
+        expect(game.man).to eq ["base"]
 
-      game.guess("Shalom", "y")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
-                              "right_arm" ]
+        game.guess("Shalom", "a")
+        expect(game.man).to eq ["base", "pole"]
 
-      game.guess("Brett", "i")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
-                              "right_arm", "left_leg"]
+        game.guess("Brett", "s")
+        expect(game.man).to eq ["base", "pole", "noose"]
 
-      game.guess("Shalom", "o")
-      expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
-                              "right_arm", "left_leg", "right_leg"]
-    end
+        game.guess("Shalom", "v")
+        expect(game.man).to eq ["base", "pole", "noose", "hat"]
 
-    it "is over when the man is completely hung" do
-      game.man = ["base", "pole", "noose", "hat", "head", "body", "left_arm",
-                  "right_arm", "left_leg", "right_leg"]
+        game.guess("Brett", "w")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head"]
 
-      expect(game.over?).to be true
-    end
+        game.guess("Shalom", "e")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body"]
 
-    it "does not allow guesses when the game is over" do
-      game.give_up!
+        game.guess("Brett", "t")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm"]
 
-      expect(game.over?).to be true
+        game.guess("Shalom", "y")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                                "right_arm" ]
 
-      expect { game.guess("Brett", "o") }.to raise_error Hangman::Game::GameOverError
-    end
+        game.guess("Brett", "i")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                                "right_arm", "left_leg"]
 
-    it "selects a winner when the game is over" do
-      game.guess("Brett", "f")
-      game.guess("Shalom", "u")
-      game.guess("Brett", "n")
+        game.guess("Shalom", "o")
+        expect(game.man).to eq ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                                "right_arm", "left_leg", "right_leg"]
+      end
 
-      expect(game.winner.name).to eq "Brett"
-    end
+      it "is over when the man is completely hung" do
+        game.man = ["base", "pole", "noose", "hat", "head", "body", "left_arm",
+                    "right_arm", "left_leg", "right_leg"]
 
-    it "fills in guesses that occur in multiple locations" do
-      game = Hangman::Game.new(:secret => "cool")
-      game.players << {:name => "Brett"}
+        expect(game.over?).to be true
+      end
 
-      game.guess("Brett", "o")
-      expect(game.word).to eq "-oo-"
+      it "does not allow guesses when the game is over" do
+        game.give_up!
+
+        expect(game.over?).to be true
+
+        expect { game.guess("Brett", "o") }.to raise_error Hangman::Game::GameOverError
+      end
+
+      it "selects a winner when the game is over" do
+        game.guess("Brett", "f")
+        game.guess("Shalom", "u")
+        game.guess("Brett", "n")
+
+        expect(game.winner.name).to eq "Brett"
+      end
+
+      it "fills in guesses that occur in multiple locations" do
+        game = Hangman::Game.new(:secret => "cool")
+        game.players << {:name => "Brett"}
+        game.start!
+
+        game.guess("Brett", "o")
+        expect(game.word).to eq "-oo-"
+      end
     end
   end
 end

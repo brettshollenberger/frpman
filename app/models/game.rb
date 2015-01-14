@@ -1,11 +1,12 @@
 module Hangman
   class Game
+    class GameNotStartedError < StandardError; end
     class OutOfTurnGuessError < StandardError; end
     class NotAPlayerError < StandardError; end
     class PreviouslyGuessedError < StandardError; end
     class GameOverError < StandardError; end
 
-    attr_accessor :word, :players, :current_player, :runner, :messages,
+    attr_accessor :word, :players, :current_player, :runner, :messages, :started,
                   :guesses, :current_error, :winner, :man, :hangman_pieces
 
     def self.hangman_pieces
@@ -13,13 +14,22 @@ module Hangman
        "left_arm", "right_arm", "left_leg", "right_leg"]
     end
 
-    def initialize(options={})
+    def initialize(options = {})
       @word           = Hangman::Word.new(options)
       @players        = Hangman::Game::Players.new
+      @started        = false
       @turn_number    = 0
       @guesses        = []
       @man            = []
       @hangman_pieces = Game.hangman_pieces.dup
+    end
+
+    def started?
+      started
+    end
+
+    def start!
+      @started = true
     end
 
     def give_up!
@@ -58,7 +68,9 @@ module Hangman
     def protect_invalid_guesses(guesser, letter_guessed)
       guesser_number = player_number(guesser)
 
-      if over?
+      if !started?
+        raise GameNotStartedError
+      elsif over?
         raise GameOverError
       elsif guesser_number.nil?
         raise NotAPlayerError, guesser

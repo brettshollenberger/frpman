@@ -5,9 +5,7 @@ angular
       link: function(scope, element, attr) {
         angular.socket.responses.filter(function(response) {
           return response.headers.method == "get" &&
-                 response.headers.url == "/notifications/:room_name" &&
-                 response.body.room.name == attr.roomName &&
-                 response.body.player == angular.socket.player;
+                 response.headers.url == "/notifications/:room_name";
         })
         .map(function(response) {
           return response.body.notification;

@@ -28,6 +28,7 @@ class GuessesController
       notify_word(room)
       notify_guesses(room)
       notify_hangman(room)
+      notify_game_over(room)
     rescue => e
       notify_error(e, guesser, guess, room)
     end
@@ -64,6 +65,29 @@ private
   def self.notify_hangman(room)
     each_connection(room) do |sock|
       sock.send controller_action HangmanController, "show", {room_name: room.name}
+    end
+  end
+
+  def self.notify_game_over(room)
+    if room.game.won?
+      room.each do |player|
+        player.socket.send controller_action NotificationsController, "show", {
+          room_name: room.name,
+          game: room.game,
+          player: player.name,
+          notification: :won
+        }
+      end
+    end
+
+    if room.game.lost?
+      each_connection(room) do |sock|
+        sock.send controller_action NotificationsController, "show", {
+          room_name: room.name,
+          game: room.game,
+          notification: :lost
+        }
+      end
     end
   end
 

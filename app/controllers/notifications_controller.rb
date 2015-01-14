@@ -55,6 +55,32 @@ private
     }
   end
 
+  def self.won(body)
+    {
+      :room => {
+        :name => body.room_name
+      },
+      :notification => {
+        :title => "Victory",
+        :message => won_text(body.game, body.player),
+        :type => "success"
+      }
+    }
+  end
+
+  def self.lost(body)
+    {
+      :room => {
+        :name => body.room_name
+      },
+      :notification => {
+        :title => "Failure",
+        :message => lost_text(body.game),
+        :type => "danger"
+      }
+    }
+  end
+
   def self.error(body)
     err_method = error_name(body.error)
 
@@ -87,6 +113,15 @@ private
     player         = body.player == current_player ? "your" : "#{current_player}'s"
 
     "It's #{player} turn"
+  end
+
+  def self.won_text(game, player)
+    winner = game.winner.name == player ? "You" : game.winner.name
+    "#{winner} solved the word!"
+  end
+
+  def self.lost_text(game)
+    "The man has died! The word was #{game.word.secret}"
   end
 
   def self.game_not_started_error_text(body)

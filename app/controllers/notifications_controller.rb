@@ -12,6 +12,8 @@ class NotificationsController
 private
   def self.letter_guessed(body)
     guesser = body.guesser == body.player ? "You" : body.guesser
+    next_player = body.game.current_player.name
+    turn_name = next_player == body.player ? "your" : "#{next_player}'s"
 
     {
       :room => {
@@ -20,7 +22,7 @@ private
       :player => body.player,
       :notification => {
         :title => "Letter Guessed",
-        :message => letter_guessed_text(guesser, body.guess),
+        :message => letter_guessed_text(guesser, body.guess, turn_name),
         :type => "info"
       }
     }
@@ -91,8 +93,8 @@ private
     "The game is not yet started. Start the game to guess a letter."
   end
 
-  def self.letter_guessed_text(guesser, guess)
-    "#{guesser} guessed #{guess}"
+  def self.letter_guessed_text(guesser, guess, turn_name)
+    "#{guesser} guessed #{guess}. It's #{turn_name} turn."
   end
 
   def self.player_joined_text(player)

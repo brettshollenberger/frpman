@@ -40,6 +40,7 @@ private
     room.each do |player|
       player.socket.send controller_action NotificationsController, "show", {
         room_name: room.name,
+        game: room.game,
         player: player.name,
         notification: :letter_guessed,
         guesser: guesser,

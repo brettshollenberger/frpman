@@ -26,6 +26,20 @@ private
     }
   end
 
+  def self.player_joined(body)
+    {
+      :room => {
+        :name => body.room_name
+      },
+      :player => body.player.name,
+      :notification => {
+        :title => "Player Joined",
+        :message => player_joined_text(body.joined),
+        :type => "info"
+      }
+    }
+  end
+
   def self.error(body)
     err_method = error_name(body.error)
 
@@ -55,6 +69,10 @@ private
 
   def self.letter_guessed_text(guesser, guess)
     "#{guesser} guessed #{guess}"
+  end
+
+  def self.player_joined_text(player)
+    "#{player} joined the game"
   end
 
   def self.previously_guessed_error_text(body)

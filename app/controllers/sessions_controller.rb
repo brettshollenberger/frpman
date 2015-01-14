@@ -22,6 +22,13 @@ private
       player.name != body.name
     end.each do |player|
       player.socket.send RoomsController.show OpenStruct.new({:name => body.room})
+
+      player.socket.send controller_action NotificationsController, "show", {
+        room_name: room.name,
+        player: player,
+        joined: body.name,
+        notification: :player_joined
+      }
     end
   end
 end

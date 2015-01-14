@@ -53,7 +53,15 @@ module Hangman
     end
 
     def over?
-      word.solved? || man_hung?
+      won? || lost?
+    end
+
+    def won?
+      word.solved?
+    end
+
+    def lost?
+      man_hung?
     end
 
     def select_winner

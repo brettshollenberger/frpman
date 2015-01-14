@@ -146,6 +146,20 @@ describe Hangman::Game do
         expect { game.guess("Brett", "o") }.to raise_error Hangman::Game::GameOverError
       end
 
+      it "is lost when the players have lost the game" do
+        game.give_up!
+
+        expect(game.lost?).to be true
+      end
+
+      it "is over when a player has won" do
+        game.guess("Brett", "f")
+        game.guess("Shalom", "u")
+        game.guess("Brett", "n")
+
+        expect(game.won?).to be true
+      end
+
       it "selects a winner when the game is over" do
         game.guess("Brett", "f")
         game.guess("Shalom", "u")

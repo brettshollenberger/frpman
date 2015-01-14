@@ -1,0 +1,15 @@
+[guessable] {
+  border: 3px solid black;
+  border-radius: 5px;
+  margin: 0px 3px;
+  padding: 5px;
+  display: inline-block;
+}
+
+[guessed] {
+  background-color: grey;
+}
+
+[word] {
+  font-size: 30px;
+}

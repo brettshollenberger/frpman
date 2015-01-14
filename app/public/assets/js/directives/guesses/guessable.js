@@ -1,20 +1,17 @@
 angular
   .module('hangman')
-  .directive('guess', [function() {
+  .directive('guessable', [function() {
     return {
-      templateUrl: "views/directives/guesses/guess.html",
       link: function(scope, element, attr) {
-        var submitButton = element.find("#submit-guess"),
-            guessInput   = element.find("#guess"),
-            submitClicks = Rx.Observable.fromEvent(submitButton, "click");
+        var clicks = Rx.Observable.fromEvent(element, "click");
 
-        submitClicks
+        clicks
           .map(function() {
-            return guessInput.val();
+            return element.text().trim();
           })
-          .map(function(guess) {
+          .map(function(letter) {
             return toSocketRequest("POST", "/guesses/:room_name", {
-              guess: guess,
+              guess: letter,
               guesser: angular.socket.player,
               roomName: attr.roomName
             });

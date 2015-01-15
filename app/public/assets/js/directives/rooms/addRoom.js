@@ -5,8 +5,8 @@ angular
       link: function(scope, element, attr) {
         var roomName        = element.find("#room-name"),
             submitButton    = element.find("#create-room"),
-            submitClicks    = submitButton.toObservable("click");
-            enterKeypresses = $(window).toObservable("keydown").filter(function(e) {
+            submitClicks    = Rx.Observable.fromEvent(submitButton, "click");
+            enterKeypresses = Rx.Observable.fromEvent($(window), "keydown").filter(function(e) {
               var code = e.keyCode || e.which;
               return code == 13;
             });

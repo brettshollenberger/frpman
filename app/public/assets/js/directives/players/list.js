@@ -4,7 +4,8 @@ angular
     return {
       link: function(scope, element, attr) {
         angular.socket.responses.filter(function(response) {
-          return response.headers.method == "get" && response.headers.url == "/rooms/:name" && response.body.room.name == attr.roomName;
+          return response.headers.method == "get" && 
+                 response.headers.url == "/rooms/:name";
         }).map(function(response) {
           return response.body.room.players;
         }).subscribe(function(players) {

@@ -11,8 +11,7 @@ angular
           .responses
           .filter(function(response) {
             return response.headers.method == "get" &&
-                   response.headers.url == "/hangman/:room_name" &&
-                   response.body.room.name == attr.roomName;
+                   response.headers.url == "/hangman/:room_name";
           })
           .map(function(response) {
             return response.body.hangman;

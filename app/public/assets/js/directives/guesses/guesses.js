@@ -8,8 +8,7 @@ angular
 
         angular.socket.responses.filter(function(response) {
           return response.headers.method == "get" &&
-                 response.headers.url == "/guesses/:room_name" &&
-                 response.body.room.name == attr.roomName;
+                 response.headers.url == "/guesses/:room_name";
         })
         .map(function(response) {
           return response.body.guesses;

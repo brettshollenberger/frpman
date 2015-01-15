@@ -16,8 +16,7 @@ angular
 
         angular.socket.responses.filter(function(response) {
           return response.headers.method == "get" &&
-                 response.headers.url == "/words/:room_name" &&
-                 response.body.room_name == attr.roomName;
+                 response.headers.url == "/words/:room_name";
         }).map(function(response) {
           return response.body.word;
         }).subscribe(function(word) {

@@ -6,7 +6,11 @@
   display: inline-block;
 }
 
-[guessed] {
+[guessable][started=true]:hover {
+  background-color: white;
+}
+
+[guessable][guessed], [guessable][guessed][started=true]:hover {
   background-color: grey;
 }
 
